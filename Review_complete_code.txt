@@ -1,0 +1,884 @@
+src/main/java
+
+com.example.ratings
+
+package com.example.ratings;
+
+RatingsAndReviewModuleApplication.java
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class RatingsAndReviewModuleApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(RatingsAndReviewModuleApplication.class, args);
+	}
+
+}
+
+
+AgentResponse.java
+
+
+com.example.ratings.entity
+
+AgentResponse.java
+
+package com.example.ratings.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+/**
+ * Entity representing an agent's response to a review.
+ */
+@Entity
+@Table(name = "agent_responses")
+public class AgentResponse {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long responseId;
+
+    @ManyToOne
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review; // Links response to the review
+
+    @ManyToOne
+    @JoinColumn(name = "agent_id", referencedColumnName = "agent_id", nullable = false) // ✅ Ensures correct mapping
+    private TravelAgent travelAgent;
+ // Ensures only package owner responds
+
+    @Column(nullable = false, length = 500)
+    private String responseMessage;
+
+    @Column(nullable = false)
+    private LocalDateTime responseTime;
+
+    // Getters and Setters
+    public Long getResponseId() { return responseId; }
+    public void setResponseId(Long responseId) { this.responseId = responseId; }
+
+    public Review getReview() { return review; }
+    public void setReview(Review review) { this.review = review; }
+
+    public TravelAgent getTravelAgent() { return travelAgent; }
+    public void setTravelAgent(TravelAgent travelAgent) { this.travelAgent = travelAgent; }
+
+    public String getResponseMessage() { return responseMessage; }
+    public void setResponseMessage(String responseMessage) { 
+        if (responseMessage == null || responseMessage.isEmpty()) {
+            throw new IllegalArgumentException("Response message cannot be empty.");
+        }
+        this.responseMessage = responseMessage; 
+    }
+
+    public LocalDateTime getResponseTime() { return responseTime; }
+    public void setResponseTime(LocalDateTime responseTime) { this.responseTime = responseTime; }
+}
+
+
+Review.java
+
+package com.example.ratings.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+/**
+ * Entity representing a review for a travel package.
+ */
+@Entity
+@Table(name = "reviews")
+public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewId;
+    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "package_id", nullable = false)
+    private TravelPackage travelPackage;
+
+
+    @Column(nullable = false)
+    private int rating;
+
+    @Column(nullable = false, length = 1000)
+    private String comment;
+
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+
+    // Getters and Setters
+    public Long getReviewId() { return reviewId; }
+    public void setReviewId(Long reviewId) { this.reviewId = reviewId; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+
+    public TravelPackage getTravelPackage() { return travelPackage; }
+    public void setTravelPackage(TravelPackage travelPackage) { this.travelPackage = travelPackage; }
+
+    public Long getPackageId() { 
+        return (travelPackage != null) ? travelPackage.getPackageId() : null;
+    }
+
+    public int getRating() { return rating; }
+    public void setRating(int rating) { this.rating = rating; }
+
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+}
+
+
+
+ TravelAgent.java
+package com.example.ratings.entity;
+
+import jakarta.persistence.*;
+
+/**
+ * Entity representing a travel agent.
+ */
+@Entity
+@Table(name = "travel_agents")
+public class TravelAgent {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "agent_id")
+    private Long agentId;
+
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
+    // Constructors
+    public TravelAgent() {}
+
+    public TravelAgent(String name) {
+        this.name = name;
+    }
+
+    public TravelAgent(Long agentId, String name) {
+        this.agentId = agentId;
+        this.name = name;
+    }
+
+    // Getters and Setters
+    public Long getAgentId() { return agentId; }
+    public void setAgentId(Long agentId) { this.agentId = agentId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+
+
+TravelPackage.java
+package com.example.ratings.entity;
+
+import jakarta.persistence.*;
+
+/**
+ * Entity representing a travel package offered by an agent.
+ */
+@Entity
+@Table(name = "travel_packages")
+public class TravelPackage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "package_id") // Ensure column name matches database schema
+    private Long packageId;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, length = 2000)
+    private String description;
+
+    @Column(nullable = false)
+    private int duration;
+
+    @Column(nullable = false)
+    private double price;
+
+    @Column(nullable = false, length = 1000)
+    private String includedServices;
+
+    @ManyToOne(fetch = FetchType.EAGER) // ✅ Forces Hibernate to load the TravelAgent object with its details
+    @JoinColumn(name = "agent_id", referencedColumnName = "agent_id", nullable = false)
+    private TravelAgent travelAgent;
+
+
+    // Getters and Setters
+    public Long getPackageId() { return packageId; }
+    public void setPackageId(Long packageId) { this.packageId = packageId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public int getDuration() { return duration; }
+    public void setDuration(int duration) { this.duration = duration; }
+
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+
+    public String getIncludedServices() { return includedServices; }
+    public void setIncludedServices(String includedServices) { this.includedServices = includedServices; }
+
+    public TravelAgent getTravelAgent() { return travelAgent; }
+    public void setTravelAgent(TravelAgent travelAgent) { this.travelAgent = travelAgent; }
+}
+
+
+
+
+AgentResponseController.java
+
+com.example.ratings.controller
+
+
+package com.example.ratings.controller;
+
+import com.example.ratings.entity.AgentResponse;
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.service.AgentResponseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
+/**
+ * Controller for handling agent responses to reviews.
+ */
+@RestController
+@RequestMapping("/api/agent-responses") // ✅ Base mapping
+public class AgentResponseController {
+    private static final Logger logger = LoggerFactory.getLogger(AgentResponseController.class);
+
+    @Autowired
+    private AgentResponseService agentResponseService;
+
+    /**
+     * Travel Agent Responds to a Review (Only if they own the package)
+     */
+    @PostMapping("/{agentId}/{reviewId}") // ✅ Removed duplicate API mapping
+    public ResponseEntity<Map<String, Object>> respondToReview(
+            @PathVariable Long agentId,
+            @PathVariable Long reviewId,
+            @RequestBody Map<String, String> requestBody) { // ✅ Accept JSON body as a map
+
+        String responseMessage = requestBody.get("responseMessage"); // ✅ Extract message from JSON
+
+        // ✅ Call the service method correctly
+        AgentResponse savedResponse = agentResponseService.respondToReview(agentId, reviewId, responseMessage);
+
+        // ✅ Extract packageId and review comment for response
+        Long packageId = savedResponse.getReview().getTravelPackage().getPackageId();
+        String reviewMessage = savedResponse.getReview().getComment();
+
+        // ✅ Create response with required fields
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("packageId", packageId);
+        responseBody.put("reviewId", reviewId);
+        responseBody.put("reviewMessage", reviewMessage);
+        responseBody.put("responseMessage", savedResponse.getResponseMessage());
+        responseBody.put("responseTime", savedResponse.getResponseTime());
+
+        return ResponseEntity.ok(responseBody);
+    }
+
+    /**
+     * Get Responses for a Specific Review
+     */
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<List<AgentResponse>> getResponsesForReview(@PathVariable Long reviewId) {
+        logger.info("Fetching responses for Review ID {}", reviewId);
+        List<AgentResponse> responses = agentResponseService.getResponsesForReview(reviewId);
+        return ResponseEntity.ok(responses);
+    }
+}
+
+
+
+
+
+ReviewController .java
+package com.example.ratings.controller;
+
+import com.example.ratings.entity.Review;
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.service.ReviewService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime; // ✅ Used for timestamps  
+import java.util.HashMap; // ✅ Required for creating response maps  
+import java.util.Map; // ✅ Helps structure JSON response  
+import com.example.ratings.repository.ReviewRepository; // ✅ Ensures repository access  
+
+import java.util.List;
+
+/**
+ * Controller for smanaging travel package reviews.
+ */
+@RestController
+@RequestMapping("/api/reviews")
+public class ReviewController {
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
+
+    @Autowired
+    private ReviewService reviewService;
+
+    /**
+     * Post a new review
+     */
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> postReview(@RequestBody Review review) {
+        logger.info("Posting a new review.");
+        
+        review.setTimestamp(LocalDateTime.now());
+        Review savedReview = reviewService.postReview(review); // ✅ Save review through service layer
+
+        // ✅ Ensure reviewId is included in the response
+        Map<String, Object> response = new HashMap<>();
+        response.put("reviewId", savedReview.getReviewId()); // ✅ Add reviewId here
+        response.put("userId", savedReview.getUserId());
+        response.put("comment", savedReview.getComment());
+        response.put("rating", savedReview.getRating());
+        response.put("timestamp", savedReview.getTimestamp());
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+    /**
+     * Retrieve all reviews associated with the specified travel package
+     */
+    @GetMapping("/{packageId}")
+    public List<Review> getReviewsByPackage(@PathVariable Long packageId) {
+        logger.info("Fetching reviews for package ID {}", packageId);
+        return reviewService.getReviewsByPackage(packageId);
+    }
+
+    /**
+     * Update an existing review
+     */
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<Review> updateReview(@PathVariable Long reviewId, @RequestBody Review updatedReview) {
+        logger.info("Updating Review ID {}", reviewId);
+        return ResponseEntity.ok(reviewService.updateReview(reviewId, updatedReview));
+    }
+
+    /**
+     * Delete a review
+     */
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId) {
+        logger.info("Deleting Review ID {}", reviewId);
+        reviewService.deleteReview(reviewId);
+        return ResponseEntity.ok("Review deleted successfully.");
+    }
+}
+
+
+
+
+TravelAgentController.java
+package com.example.ratings.controller;
+
+import com.example.ratings.entity.TravelAgent;
+import com.example.ratings.service.TravelAgentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/travel-agents")
+public class TravelAgentController {
+    @Autowired
+    private TravelAgentService travelAgentService;
+
+    @PostMapping
+    public ResponseEntity<TravelAgent> createAgent(@RequestBody TravelAgent travelAgent) {
+        return ResponseEntity.ok(travelAgentService.createAgent(travelAgent));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TravelAgent>> getAllAgents() {
+        return ResponseEntity.ok(travelAgentService.getAllAgents());
+    }
+}
+
+
+
+
+TravelPackageController.java
+package com.example.ratings.controller;
+
+import com.example.ratings.entity.TravelPackage;
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.service.TravelPackageService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * Controller for managing travel packages.
+ */
+@RestController
+@RequestMapping("/api/packages")
+public class TravelPackageController {
+    private static final Logger logger = LoggerFactory.getLogger(TravelPackageController.class);
+
+    @Autowired
+    private TravelPackageService travelPackageService;
+
+    /**
+     * Create a new travel package
+     */
+    @PostMapping
+    public ResponseEntity<TravelPackage> createPackage(@RequestBody TravelPackage travelPackage) {
+        logger.info("Creating a new travel package.");
+        return ResponseEntity.ok(travelPackageService.createPackage(travelPackage));
+    }
+
+    /**
+     * Retrieve all travel packages
+     */
+    @GetMapping
+    public List<TravelPackage> getAllPackages() {
+        logger.info("Fetching all travel packages.");
+        return travelPackageService.getAllPackages();
+    }
+}
+
+
+
+com.example.ratings.repository
+
+
+
+AgentResponseRepository.java
+package com.example.ratings.repository;
+
+import com.example.ratings.entity.AgentResponse;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+/**
+ * Repository for managing agent responses to reviews.
+ */
+@Repository
+public interface AgentResponseRepository extends JpaRepository<AgentResponse, Long> {
+    /**
+     * Find all responses related to a specific review.
+     */
+    List<AgentResponse> findByReview_ReviewId(Long reviewId);
+}
+
+
+
+
+
+ReviewRepository.java
+package com.example.ratings.repository;
+
+import com.example.ratings.entity.Review;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Repository for managing travel package reviews.
+ */
+@Repository
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+}
+
+
+
+
+TravelAgentRepository.java
+package com.example.ratings.repository;
+
+import com.example.ratings.entity.TravelAgent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TravelAgentRepository extends JpaRepository<TravelAgent, Long> {
+}
+
+
+
+
+
+TravelPackageRepository.java
+package com.example.ratings.repository;
+
+import com.example.ratings.entity.TravelPackage;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Repository for managing travel packages.
+ */
+@Repository
+public interface TravelPackageRepository extends JpaRepository<TravelPackage, Long> {
+}
+
+
+
+
+AgentResponseService.java
+com.example.ratings.service
+
+package com.example.ratings.service;
+
+import com.example.ratings.entity.AgentResponse;
+import com.example.ratings.entity.Review;
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.repository.AgentResponseRepository;
+import com.example.ratings.repository.ReviewRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class AgentResponseService {
+    private static final Logger logger = LoggerFactory.getLogger(AgentResponseService.class);
+
+    @Autowired
+    private AgentResponseRepository agentResponseRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    /**
+     * Allows a travel agent to respond to a review.
+     * Only the agent who owns the package can respond.
+     */
+    public AgentResponse respondToReview(Long agentId, Long reviewId, String responseMessage) {
+        logger.info("Attempting to respond to review ID: {}", reviewId);
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> {
+                    logger.error("Review ID {} not found.", reviewId);
+                    return new ResourceNotFoundException("Review not found.");
+                });
+
+        Long packageAgentId = review.getTravelPackage().getTravelAgent().getAgentId();
+
+        // Authorization check: Only package owner can respond
+        if (!packageAgentId.equals(agentId)) {
+            logger.warn("Unauthorized response attempt by Agent ID {}", agentId);
+            throw new ResourceNotFoundException("Unauthorized: Only the package owner can respond.");
+        }
+
+        AgentResponse response = new AgentResponse();
+        response.setReview(review);
+        response.setTravelAgent(review.getTravelPackage().getTravelAgent());
+        response.setResponseMessage(responseMessage);
+        response.setResponseTime(LocalDateTime.now());
+
+        logger.info("Agent ID {} successfully responded to review ID {}", agentId, reviewId);
+        return agentResponseRepository.save(response);
+    }
+
+    /**
+     * Retrieves responses for a specific review.
+     */
+    public List<AgentResponse> getResponsesForReview(Long reviewId) {
+        logger.info("Fetching responses for review ID: {}", reviewId);
+        return agentResponseRepository.findByReview_ReviewId(reviewId);
+    }
+}
+
+
+
+
+ReviewService.java
+
+package com.example.ratings.service;
+
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.entity.Review;
+import com.example.ratings.repository.ReviewRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.time.LocalDateTime;
+@Service
+public class ReviewService {
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    /**
+     * Posts a new review.
+     */
+    public Review postReview(Review review) {
+        logger.info("Posting a new review.");
+        review.setTimestamp(LocalDateTime.now()); // ✅ Sets timestamp before saving
+        return reviewRepository.save(review);
+    }
+    /**
+     * Updates an existing review.
+     */
+    public Review updateReview(Long reviewId, Review updatedReview) {
+        logger.info("Updating review ID {}", reviewId);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> {
+                    logger.error("Review ID {} not found.", reviewId);
+                    return new ResourceNotFoundException("Review not found.");
+                });
+
+        review.setRating(updatedReview.getRating());
+        review.setComment(updatedReview.getComment());
+
+        return reviewRepository.save(review);
+    }
+
+    /**
+     * Deletes a review.
+     */
+    public void deleteReview(Long reviewId) {
+        logger.info("Deleting review ID {}", reviewId);
+        reviewRepository.findById(reviewId)
+                .orElseThrow(() -> {
+                    logger.error("Review ID {} not found.", reviewId);
+                    return new ResourceNotFoundException("Review not found.");
+                });
+
+        reviewRepository.deleteById(reviewId);
+    }
+
+    /**
+     * Retrieves all reviews for a specific travel package.
+     */
+    public List<Review> getReviewsByPackage(Long packageId) {
+        logger.info("Fetching reviews for package ID {}", packageId);
+        return reviewRepository.findAll().stream()
+                .filter(review -> review.getPackageId().equals(packageId))
+                .toList();
+    }
+}
+
+
+
+
+
+TravelAgentService.java
+package com.example.ratings.service;
+
+import com.example.ratings.entity.TravelAgent;
+import com.example.ratings.repository.TravelAgentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class TravelAgentService {
+    @Autowired
+    private TravelAgentRepository travelAgentRepository;
+
+    public TravelAgent createAgent(TravelAgent agent) {
+        return travelAgentRepository.save(agent);
+    }
+
+    public List<TravelAgent> getAllAgents() {
+        return travelAgentRepository.findAll();
+    }
+}
+
+
+
+
+
+TravelPackageService.java
+package com.example.ratings.service;
+
+import com.example.ratings.exception.ResourceNotFoundException;
+import com.example.ratings.entity.TravelPackage;
+import com.example.ratings.repository.TravelPackageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import com.example.ratings.entity.TravelAgent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.example.ratings.repository.TravelAgentRepository;
+
+@Service
+public class TravelPackageService {
+    private static final Logger logger = LoggerFactory.getLogger(TravelPackageService.class);
+
+    @Autowired
+    private TravelPackageRepository travelPackageRepository;
+
+    @Autowired  // ✅ Add TravelAgentRepository to fix the error
+    private TravelAgentRepository travelAgentRepository;
+
+    /**
+     * Creates a new travel package.
+     */
+    public TravelPackage createPackage(TravelPackage travelPackage) {
+        Long agentId = travelPackage.getTravelAgent().getAgentId();
+
+        // ✅ Fetch the existing agent from DB
+        TravelAgent agent = travelAgentRepository.findById(agentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Travel agent with ID " + agentId + " not found."));
+
+        // ✅ Assign the fully populated TravelAgent object
+        travelPackage.setTravelAgent(agent);
+
+        return travelPackageRepository.save(travelPackage);
+    }
+
+    /**
+     * Retrieves all travel packages.
+     */
+    public List<TravelPackage> getAllPackages() {
+        logger.info("Fetching all travel packages.");
+        return travelPackageRepository.findAll();
+    }
+
+    /**
+     * Retrieves a travel package by ID.
+     */
+    public TravelPackage getPackageById(Long packageId) {
+        logger.info("Fetching travel package with ID {}", packageId);
+        return travelPackageRepository.findById(packageId)
+                .orElseThrow(() -> {
+                    logger.error("Travel package ID {} not found.", packageId);
+                    return new ResourceNotFoundException("Travel package not found.");
+                });
+    }
+}
+
+
+
+com.example.ratings.exception
+
+
+GlobalExceptionHandler.java
+
+package com.example.ratings.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Centralized exception handling across the application.
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * Handles `ResourceNotFoundException` when an entity is not found.
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        logger.error("Resource Not Found: {}", ex.getMessage());
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "Resource Not Found");
+        errorResponse.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Handles generic exceptions.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        logger.error("Unhandled Exception: {}", ex.getMessage());
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.put("error", "Internal Server Error");
+        errorResponse.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+
+
+ResourceNotFoundException.java
+package com.example.ratings.exception;
+
+/**
+ * Custom exception for handling "Resource Not Found" errors.
+ * Used when an entity such as Review, TravelPackage, or TravelAgent does not exist.
+ */
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

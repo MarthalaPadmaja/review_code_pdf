@@ -1,0 +1,553 @@
+Travel Agent 
+
+Post Method   :   http://localhost:8081/api/travel-agents
+
+{
+    "name": "John Doe"
+}
+
+
+Response:
+{
+    "agentId": 1,
+    "name": "John Doe"
+}
+
+
+
+Creating Package
+
+Post:  http://localhost:8081/api/packages
+
+Request
+{
+    "title": "Luxury Beach Retreat",
+    "description": "5-day beach stay",
+    "duration": 5,
+    "price": 1200.0,
+    "includedServices": "Flights, meals",
+    "travelAgent": {
+        "agentId": 1
+    }
+}
+
+
+
+Response
+{
+    "packageId": 4,
+    "title": "Luxury Beach Retreat",
+    "description": "5-day beach stay",
+    "duration": 5,
+    "price": 1200.0,
+    "includedServices": "Flights, meals",
+    "travelAgent": {
+        "agentId": 1,
+        "name": "John Doe"
+    }
+}
+
+Review Posting
+Post :  http://localhost:8081/api/reviews
+Request:
+{
+    "userId": 6,
+    "travelPackage": {
+        "packageId": 4
+    },
+    "rating": 4,
+    "comment": "Amazing experience, but the food could be better."
+}
+
+
+
+Response:
+{
+    "rating": 4,
+    "comment": "Amazing experience, but the food could be better.",
+    "reviewId": 3,
+    "userId": 6,
+    "timestamp": "2025-06-03T20:00:26.8257223"
+}
+
+Travel Agent Response
+
+Post : http://localhost:8081/api/agent-responses/2/4
+Request
+{
+    "responseMessage": "Thank you for your feedback! We will make improvements to the food service for a better experience."
+}
+Response
+{
+    "responseTime": "2025-06-03T20:32:26.2959559",
+    "reviewMessage": "Amazing experience, but the food could be better.",
+    "packageId": 5,
+    "responseMessage": "Thank you for your feedback! We will make improvements to the food service for a better experience.",
+    "reviewId": 4
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    "agentId": 2,
+    "name": "Padmaja"
+}
+
+{
+    "packageId": 5,
+    "title": "Luxury Beach Retreat",
+    "description": "5-day beach stay",
+    "duration": 5,
+    "price": 1200.0,
+    "includedServices": "Flights, meals",
+    "travelAgent": {
+        "agentId": 2,
+        "name": "Padmaja"
+    }
+}
+
+
+{
+    "rating": 4,
+    "comment": "Amazing experience, but the food could be better.",
+    "reviewId": 4,
+    "userId": 6,
+    "timestamp": "2025-06-03T20:28:51.3621196"
+}
+
+
+
+
+
+All Agents information
+
+GET 
+
+http://localhost:8081/api/travel-agents 
+
+[
+    {
+        "agentId": 1,
+        "name": "John Doe"
+    },
+    {
+        "agentId": 2,
+        "name": "Padmaja"
+    },
+    {
+        "agentId": 3,
+        "name": "Ankitha"
+    },
+    {
+        "agentId": 4,
+        "name": "Navya Sri"
+    },
+    {
+        "agentId": 5,
+        "name": "Mamatha"
+    },
+    {
+        "agentId": 6,
+        "name": "Manasa"
+    },
+    {
+        "agentId": 7,
+        "name": "Pradeep"
+    },
+    {
+        "agentId": 8,
+        "name": "Muni"
+    },
+    {
+        "agentId": 9,
+        "name": "Asmi"
+    },
+    {
+        "agentId": 10,
+        "name": "Pallavi"
+    },
+    {
+        "agentId": 11,
+        "name": "Bhavana"
+    }
+]
+
+
+
+Get :  http://localhost:8081/api/packages
+
+
+
+[
+    {
+        "packageId": 3,
+        "title": "Luxury Beach Retreat",
+        "description": "5-day beach stay",
+        "duration": 5,
+        "price": 1200.0,
+        "includedServices": "Flights, meals",
+        "travelAgent": {
+            "agentId": 1,
+            "name": "John Doe"
+        }
+    },
+    {
+        "packageId": 4,
+        "title": "Luxury Beach Retreat",
+        "description": "5-day beach stay",
+        "duration": 5,
+        "price": 1200.0,
+        "includedServices": "Flights, meals",
+        "travelAgent": {
+            "agentId": 1,
+            "name": "John Doe"
+        }
+    },
+    {
+        "packageId": 5,
+        "title": "Luxury Beach Retreat",
+        "description": "5-day beach stay",
+        "duration": 5,
+        "price": 1200.0,
+        "includedServices": "Flights, meals",
+        "travelAgent": {
+            "agentId": 2,
+            "name": "Padmaja"
+        }
+    },
+    {
+        "packageId": 6,
+        "title": "Exotic Island Escape",
+        "description": "3-day beach stay",
+        "duration": 3,
+        "price": 7000.0,
+        "includedServices": "Flights, meals, sightseeing",
+        "travelAgent": {
+            "agentId": 1,
+            "name": "John Doe"
+        }
+    },
+    {
+        "packageId": 7,
+        "title": "Tropical Paradise Adventure",
+        "description": "5-day island getaway",
+        "duration": 5,
+        "price": 8500.0,
+        "includedServices": "Flights, meals, snorkeling tour",
+        "travelAgent": {
+            "agentId": 3,
+            "name": "Ankitha"
+        }
+    },
+    {
+        "packageId": 8,
+        "title": "Mountain Retreat Escape",
+        "description": "4-day luxury mountain lodge stay",
+        "duration": 4,
+        "price": 6200.0,
+        "includedServices": "Flights, meals, guided hiking",
+        "travelAgent": {
+            "agentId": 4,
+            "name": "Navya Sri"
+        }
+    },
+    {
+        "packageId": 9,
+        "title": "Historic Europe Tour",
+        "description": "7-day visit to historic European cities",
+        "duration": 7,
+        "price": 9800.0,
+        "includedServices": "Flights, meals, guided city tours",
+        "travelAgent": {
+            "agentId": 5,
+            "name": "Mamatha"
+        }
+    },
+    {
+        "packageId": 10,
+        "title": "Safari Adventure in Africa",
+        "description": "6-day wildlife safari",
+        "duration": 6,
+        "price": 11000.0,
+        "includedServices": "Flights, meals, safari expeditions",
+        "travelAgent": {
+            "agentId": 6,
+            "name": "Manasa"
+        }
+    },
+    {
+        "packageId": 11,
+        "title": "Arctic Northern Lights Experience",
+        "description": "5-day stay in an ice hotel",
+        "duration": 5,
+        "price": 8900.0,
+        "includedServices": "Flights, meals, Northern Lights viewing",
+        "travelAgent": {
+            "agentId": 7,
+            "name": "Pradeep"
+        }
+    },
+    {
+        "packageId": 12,
+        "title": "Luxury Cruise in the Caribbean",
+        "description": "7-day cruise across Caribbean islands",
+        "duration": 7,
+        "price": 12500.0,
+        "includedServices": "Meals, onboard entertainment, shore excursions",
+        "travelAgent": {
+            "agentId": 8,
+            "name": "Muni"
+        }
+    },
+    {
+        "packageId": 13,
+        "title": "Desert Oasis Adventure",
+        "description": "4-day stay in a desert resort",
+        "duration": 4,
+        "price": 5800.0,
+        "includedServices": "Flights, meals, camel trekking",
+        "travelAgent": {
+            "agentId": 9,
+            "name": "Asmi"
+        }
+    },
+    {
+        "packageId": 14,
+        "title": "Asian Cultural Tour",
+        "description": "10-day immersive experience in Asia",
+        "duration": 10,
+        "price": 14000.0,
+        "includedServices": "Flights, meals, cultural workshops",
+        "travelAgent": {
+            "agentId": 10,
+            "name": "Pallavi"
+        }
+    },
+    {
+        "packageId": 15,
+        "title": "Amazon Rainforest Expedition",
+        "description": "5-day guided tour deep into the rainforest",
+        "duration": 5,
+        "price": 9500.0,
+        "includedServices": "Flights, meals, river boat excursions",
+        "travelAgent": {
+            "agentId": 11,
+            "name": "Bhavana"
+        }
+    }
+]
+
+
+Get for packages reviews 
+
+get http://localhost:8081/api/reviews/3
+
+
+mention specific package review u want
+
+[
+    {
+        "reviewId": 5,
+        "userId": 6,
+        "travelPackage": {
+            "packageId": 3,
+            "title": "Luxury Beach Retreat",
+            "description": "5-day beach stay",
+            "duration": 5,
+            "price": 1200.0,
+            "includedServices": "Flights, meals",
+            "travelAgent": {
+                "agentId": 1,
+                "name": "John Doe"
+            }
+        },
+        "rating": 5,
+        "comment": "Absolutely loved the Tropical Paradise Adventure! Everything was well-organized.",
+        "timestamp": "2025-06-04T08:47:32.606975",
+        "packageId": 3
+    }
+]
+
+
+GET
+http://localhost:8081/api/reviews/4
+
+
+[
+    {
+        "reviewId": 1,
+        "userId": 5,
+        "travelPackage": {
+            "packageId": 4,
+            "title": "Luxury Beach Retreat",
+            "description": "5-day beach stay",
+            "duration": 5,
+            "price": 1200.0,
+            "includedServices": "Flights, meals",
+            "travelAgent": {
+                "agentId": 1,
+                "name": "John Doe"
+            }
+        },
+        "rating": 4,
+        "comment": "Amazing experience, but the food could be better.",
+        "timestamp": "2025-06-03T18:53:14.180285",
+        "packageId": 4
+    },
+    {
+        "reviewId": 2,
+        "userId": 5,
+        "travelPackage": {
+            "packageId": 4,
+            "title": "Luxury Beach Retreat",
+            "description": "5-day beach stay",
+            "duration": 5,
+            "price": 1200.0,
+            "includedServices": "Flights, meals",
+            "travelAgent": {
+                "agentId": 1,
+                "name": "John Doe"
+            }
+        },
+        "rating": 4,
+        "comment": "Amazing experience, but the food could be better.",
+        "timestamp": "2025-06-03T19:47:07.726959",
+        "packageId": 4
+    },
+    {
+        "reviewId": 3,
+        "userId": 6,
+        "travelPackage": {
+            "packageId": 4,
+            "title": "Luxury Beach Retreat",
+            "description": "5-day beach stay",
+            "duration": 5,
+            "price": 1200.0,
+            "includedServices": "Flights, meals",
+            "travelAgent": {
+                "agentId": 1,
+                "name": "John Doe"
+            }
+        },
+        "rating": 4,
+        "comment": "Amazing experience, but the food could be better.",
+        "timestamp": "2025-06-03T20:00:26.825722",
+        "packageId": 4
+    }
+]
+
+
+
+PUT    http://localhost:8081/api/reviews/4
+{
+    "rating": 4,
+    "comment": "Loved the experience! The food was great too."
+}
+
+
+RESPONSE
+
+
+{
+    "reviewId": 4,
+    "userId": 6,
+    "travelPackage": {
+        "packageId": 5,
+        "title": "Luxury Beach Retreat",
+        "description": "5-day beach stay",
+        "duration": 5,
+        "price": 1200.0,
+        "includedServices": "Flights, meals",
+        "travelAgent": {
+            "agentId": 2,
+            "name": "Padmaja"
+        }
+    },
+    "rating": 4,
+    "comment": "Loved the experience! The food was great too.",
+    "timestamp": "2025-06-03T20:28:51.36212",
+    "packageId": 5
+}
+
+GET
+http://localhost:8081/api/reviews/8
+
+[
+    {
+        "reviewId": 9,
+        "userId": 16,
+        "travelPackage": {
+            "packageId": 8,
+            "title": "Mountain Retreat Escape",
+            "description": "4-day luxury mountain lodge stay",
+            "duration": 4,
+            "price": 6200.0,
+            "includedServices": "Flights, meals, guided hiking",
+            "travelAgent": {
+                "agentId": 4,
+                "name": "Navya Sri"
+            }
+        },
+        "rating": 4,
+        "comment": "The Caribbean cruise was fun, but I expected more entertainment onboard.",
+        "timestamp": "2025-06-04T08:49:52.78975",
+        "packageId": 8
+    }
+]
+
+DELETE    http://localhost:8081/api/reviews/6
+Review deleted successfully.
+
+
+
+
+
+AGENT RESPONSE
+
+
+POST  http://localhost:8081/api/agent-responses/4/9
+
+REQUEST
+
+{
+    "responseMessage": "Thank you for your feedback! We will improve the food quality."
+}
+RESPONSE
+
+{
+    "responseTime": "2025-06-04T09:02:30.5388712",
+    "reviewMessage": "The Caribbean cruise was fun, but I expected more entertainment onboard.",
+    "packageId": 8,
+    "responseMessage": "Thank you for your feedback! We will improve the food quality.",
+    "reviewId": 9
+}
+
+ 
+
+
